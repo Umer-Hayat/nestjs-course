@@ -9,25 +9,22 @@ import {
   Query,
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
-import { Task } from './tasks.model';
+import { Task } from './task.entity';
 import { CreateTaskDto } from './dto/create-task.dto';
-import { GetTaskFilterDto } from './dto/get-task-filter.dto';
 import { UpdateTaskStatusDto } from './dto/update-task-status.dto';
+import { GetTaskFilterDto } from './dto/get-task-filter.dto';
 
 @Controller('tasks')
 export class TasksController {
   constructor(private tasksService: TasksService) {}
 
   @Get()
-  getTasks(@Query() params: GetTaskFilterDto): Task[] {
-    if (Object.keys(params).length === 0) {
-      return this.tasksService.getAllTasks();
-    }
-    return this.tasksService.getTasksWithFilter(params);
+  getTasks(@Query() params: GetTaskFilterDto): Promise<Task[]> {
+    return this.tasksService.getTasks(params);
   }
 
   @Post()
-  createTask(@Body() body: CreateTaskDto): Task {
+  createTask(@Body() body: CreateTaskDto): Promise<Task> {
     return this.tasksService.createTask(body);
   }
 
@@ -41,7 +38,7 @@ export class TasksController {
   }
 
   @Get('/:id')
-  getTaskById(@Param('id') id: string): Task {
+  getTaskById(@Param('id') id: string): Promise<Task> {
     return this.tasksService.getTaskById(id);
   }
 
